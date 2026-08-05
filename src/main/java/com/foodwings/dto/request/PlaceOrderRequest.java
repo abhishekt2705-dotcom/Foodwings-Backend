@@ -1,0 +1,26 @@
+package com.foodwings.dto.request;
+
+import com.foodwings.enums.PaymentMethod;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class PlaceOrderRequest {
+
+    @NotNull(message = "Delivery address id is required")
+    private Long addressId;
+
+    @NotNull(message = "Payment method is required")
+    private PaymentMethod paymentMethod;
+
+    /** Optional coupon code to apply at checkout. */
+    private String couponCode;
+}
