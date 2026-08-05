@@ -5,25 +5,35 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:mysql}
 
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    database-platform: org.hibernate.dialect.MySQLDialect
+    properties:
+      hibernate:
+        format_sql: true
+
   servlet:
     multipart:
       max-file-size: 5MB
       max-request-size: 10MB
 
-  jpa:
-    open-in-view: false
-    properties:
-      hibernate:
-        format_sql: true
-
 server:
-  port: ${PORT:${SERVER_PORT:8080}}
+  port: ${PORT:8080}
   servlet:
     context-path: /
 
 foodwings:
   jwt:
-    secret: ${JWT_SECRET:Zm9vZHdpbmdzLXN1cGVyLXNlY3JldC1rZXktZm9yLWp3dC1zaWduaW5nLTIwMjQtY2hhbmdlLW1l}
+    secret: ${JWT_SECRET}
     access-token-expiration-ms: 3600000
     refresh-token-expiration-ms: 604800000
 
@@ -51,30 +61,6 @@ logging:
 spring:
   config:
     activate:
-      on-profile: mysql
-
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-
-    show-sql: false
-
-    database-platform: org.hibernate.dialect.MySQLDialect
-
-    properties:
-      hibernate:
-        format_sql: true
-
----
-spring:
-  config:
-    activate:
       on-profile: dev
 
   datasource:
@@ -86,9 +72,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-
     show-sql: false
-
     database-platform: org.hibernate.dialect.H2Dialect
 
   h2:
