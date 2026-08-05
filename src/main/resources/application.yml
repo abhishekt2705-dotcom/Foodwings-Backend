@@ -3,7 +3,7 @@ spring:
     name: FoodWings
 
   datasource:
-    url: ${DB_URL:${MYSQL_URL:${SPRING_DATASOURCE_URL:jdbc:mysql://caboose.proxy.rlwy.net:42672/railway?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}}}
+    url: ${DB_URL:${MYSQL_URL:${SPRING_DATASOURCE_URL:jdbc:mysql://caboose.proxy.rlwy.net:42672/railway?useSSL=true&verifyServerCertificate=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&connectTimeout=20000}}}
     username: ${DB_USERNAME:${MYSQLUSER:${SPRING_DATASOURCE_USERNAME:root}}}
     password: ${DB_PASSWORD:${MYSQLPASSWORD:${SPRING_DATASOURCE_PASSWORD:axRbyqzFeaIDkzDlnQeLfuvqdatMbjpM}}}
     driver-class-name: com.mysql.cj.jdbc.Driver
