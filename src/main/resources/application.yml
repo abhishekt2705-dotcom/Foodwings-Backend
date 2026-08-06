@@ -12,6 +12,7 @@ spring:
 
   jpa:
     open-in-view: false
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: ${DDL_AUTO:update}
     show-sql: false
@@ -87,6 +88,7 @@ spring:
     password: ${DB_PASSWORD:${MYSQLPASSWORD:axRbyqzFeaIDkzDlnQeLfuvqdatMbjpM}}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
 
