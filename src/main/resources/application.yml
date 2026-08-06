@@ -2,11 +2,13 @@ spring:
   application:
     name: FoodWings
 
+  # Spring Boot datasource — overridden at runtime by DataSourceConfig bean.
+  # These values are only read by DataSourceConfig; Spring Boot auto-config is excluded below.
   datasource:
-    url: ${DB_URL:jdbc:mysql://66.33.22.253:42672/railway?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&connectTimeout=5000&socketTimeout=10000}
-    username: ${DB_USERNAME:${MYSQLUSER:${SPRING_DATASOURCE_USERNAME:root}}}
-    password: ${DB_PASSWORD:${MYSQLPASSWORD:${SPRING_DATASOURCE_PASSWORD:axRbyqzFeaIDkzDlnQeLfuvqdatMbjpM}}}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:h2:mem:foodwings;DB_CLOSE_DELAY=-1;MODE=MySQL;NON_KEYWORDS=VALUE}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.h2.Driver
 
   jpa:
     open-in-view: false
@@ -21,6 +23,10 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 10MB
+
+  h2:
+    console:
+      enabled: false
 
 management:
   endpoints:
@@ -68,7 +74,25 @@ logging:
 
 ---
 # ===========================================================================
-# Dev profile -- in-memory H2 so the application runs without a MySQL server
+# MySQL profile -- use when a real MySQL/Railway DB is available
+# Run with: -Dspring-boot.run.profiles=mysql
+# ===========================================================================
+spring:
+  config:
+    activate:
+      on-profile: mysql
+  datasource:
+    url: ${DB_URL:jdbc:mysql://66.33.22.253:42672/railway?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&connectTimeout=5000&socketTimeout=10000}
+    username: ${DB_USERNAME:${MYSQLUSER:root}}
+    password: ${DB_PASSWORD:${MYSQLPASSWORD:axRbyqzFeaIDkzDlnQeLfuvqdatMbjpM}}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+---
+# ===========================================================================
+# Dev profile -- in-memory H2 so the application runs without any DB server
 # Run with: mvn spring-boot:run -Dspring-boot.run.profiles=dev
 # ===========================================================================
 spring:
@@ -76,7 +100,7 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:h2:mem:foodwings;DB_CLOSE_DELAY=-1;MODE=MySQL
+    url: jdbc:h2:mem:foodwings;DB_CLOSE_DELAY=-1;MODE=MySQL;NON_KEYWORDS=VALUE
     username: sa
     password:
     driver-class-name: org.h2.Driver
