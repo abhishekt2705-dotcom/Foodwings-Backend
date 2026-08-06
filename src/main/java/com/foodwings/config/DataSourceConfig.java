@@ -53,12 +53,14 @@ public class DataSourceConfig {
             try (Connection conn = ds.getConnection()) {
                 log.info("Successfully connected to primary MySQL database!");
                 return ds;
-            } catch (Exception e) {
-                log.warn("Primary MySQL connection failed ({}), initializing H2 database fallback...", e.getMessage());
-                ds.close();
+            } catch (Throwable t) {
+                log.warn("Primary MySQL connection failed ({}), initializing H2 database fallback...", t.getMessage());
+                try {
+                    ds.close();
+                } catch (Throwable ignored) {}
             }
-        } catch (Exception e) {
-            log.warn("Error creating primary HikariDataSource ({}), using fallback...", e.getMessage());
+        } catch (Throwable t) {
+            log.warn("Error creating primary HikariDataSource ({}), using fallback...", t.getMessage());
         }
 
         // Resilient fallback to embedded H2 database in MySQL mode
