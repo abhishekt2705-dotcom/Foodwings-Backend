@@ -12,21 +12,32 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: ${DDL_AUTO:update}
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
 
   servlet:
     multipart:
       max-file-size: 5MB
       max-request-size: 10MB
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
 server:
   port: ${PORT:${SERVER_PORT:8080}}
   address: 0.0.0.0
   servlet:
     context-path: /
+  tomcat:
+    connection-timeout: 60000
 
 # ---------------------------------------------------------------------------
 # Application specific configuration
@@ -53,6 +64,7 @@ logging:
   level:
     org.springframework.security: INFO
     com.foodwings: DEBUG
+    com.zaxxer.hikari: WARN
 
 ---
 # ===========================================================================
