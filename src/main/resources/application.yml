@@ -2,12 +2,12 @@ spring:
   application:
     name: FoodWings
 
-  # Spring Boot datasource — overridden at runtime by DataSourceConfig bean.
-  # These values are only read by DataSourceConfig; Spring Boot auto-config is excluded below.
+  # Default: H2 in-memory database (works on Render free tier with zero config)
+  # To use MySQL: set SPRING_PROFILES_ACTIVE=mysql + DB_URL/DB_USERNAME/DB_PASSWORD in Render env
   datasource:
-    url: ${DB_URL:jdbc:h2:mem:foodwings;DB_CLOSE_DELAY=-1;MODE=MySQL;NON_KEYWORDS=VALUE}
-    username: ${DB_USERNAME:sa}
-    password: ${DB_PASSWORD:}
+    url: jdbc:h2:mem:foodwings;DB_CLOSE_DELAY=-1;MODE=MySQL;NON_KEYWORDS=VALUE
+    username: sa
+    password: ""
     driver-class-name: org.h2.Driver
 
   jpa:
