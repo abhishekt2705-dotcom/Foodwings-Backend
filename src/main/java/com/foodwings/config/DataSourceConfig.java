@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DriverManager;
 
 @Configuration
 public class DataSourceConfig {
@@ -32,6 +33,9 @@ public class DataSourceConfig {
     @Bean
     @Primary
     public DataSource dataSource() {
+        // Cap global JDBC login timeout so TCP handshake to dead MySQL fails fast
+        DriverManager.setLoginTimeout(8);
+
         String targetUrl = dbUrl;
         if (targetUrl != null && targetUrl.startsWith("mysql://")) {
             targetUrl = "jdbc:" + targetUrl;
@@ -45,31 +49,30 @@ public class DataSourceConfig {
             config.setUsername(dbUsername);
             config.setPassword(dbPassword);
             config.setDriverClassName(driverClassName);
-            config.setConnectionTimeout(5000);
+            config.setConnectionTimeout(8000);       // 8s to get a connection from pool
             config.setValidationTimeout(3000);
-            config.setInitializationFailTimeout(-1);
+            config.setInitializationFailTimeout(0);  // fail fast if no connection on startup
 
             HikariDataSource ds = new HikariDataSource(config);
             try (Connection conn = ds.getConnection()) {
                 log.info("Successfully connected to primary MySQL database!");
                 return ds;
             } catch (Throwable t) {
-                log.warn("Primary MySQL connection failed ({}), initializing H2 database fallback...", t.getMessage());
-                try {
-                    ds.close();
-                } catch (Throwable ignored) {}
+                log.warn("Primary MySQL connection test failed ({}), switching to H2 fallback...", t.getMessage());
+                try { ds.close(); } catch (Throwable ignored) {}
             }
         } catch (Throwable t) {
-            log.warn("Error creating primary HikariDataSource ({}), using fallback...", t.getMessage());
+            log.warn("Primary DataSource creation failed ({}), switching to H2 fallback...", t.getMessage());
         }
 
         // Resilient fallback to embedded H2 database in MySQL mode
-        log.info("Starting fallback H2 database in MySQL mode...");
+        log.info("Starting H2 in-memory database (MySQL compatibility mode)...");
         HikariConfig fallbackConfig = new HikariConfig();
-        fallbackConfig.setJdbcUrl("jdbc:h2:mem:foodwings;DB_CLOSE_DELAY=-1;MODE=MySQL");
+        fallbackConfig.setJdbcUrl("jdbc:h2:mem:foodwings;DB_CLOSE_DELAY=-1;MODE=MySQL;NON_KEYWORDS=VALUE");
         fallbackConfig.setUsername("sa");
         fallbackConfig.setPassword("");
         fallbackConfig.setDriverClassName("org.h2.Driver");
+        fallbackConfig.setConnectionTimeout(5000);
         return new HikariDataSource(fallbackConfig);
     }
 }
